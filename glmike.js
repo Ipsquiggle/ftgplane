@@ -145,6 +145,22 @@ function initShaders() {
         this.initUniform( "grayness" );
     }
     postGrayscale.initShaderById( "postGrayscale", "vpost", "fpostGrayscale" );
+
+
+    // Graham test shader 1:
+    // Shadow stamping
+    var shadowStamp = new ftgMaterial();
+    shadowStamp.initShaderValues = function() {
+        this.bindAttribute( "aVertexPosition" );
+        this.bindAttribute( "aTextureCoord" );
+
+        this.initUniform( "uPMatrix" );
+        this.initUniform( "uMVMatrix" );
+        this.initUniform( "uSampler" );
+        this.initUniform( "uBoxMatrix" );
+    }
+    shadowStamp.initShaderById( "shadowStamp", "vdef", "fshadowstamp" );
+
 }
 
 
@@ -160,6 +176,7 @@ function draw() {
         // Fixme: this isn't going to scale.
         ftg.mats.def.setProjectionUniform( scene.pMatrix );
         ftg.mats.silhouette.setProjectionUniform( scene.pMatrix );
+        ftg.mats.shadowStamp.setProjectionUniform( scene.pMatrix );
 
         mvPushMatrix( scene );  
         scene.planeSpan.drawArrays( scene.mvMatrix, scene.rt.intermediate );
