@@ -52,6 +52,9 @@ scene.pMatrix  = mat4.create();
 scene.mvMatrixStack = [];
 scene.closestZ = 1;
 scene.rt = {};
+scene.animateCamera = false;
+scene.cameraPos = [0,0,1];
+scene.lightPos = [0,1,1];
 
 //
 // Begin helpers
@@ -201,11 +204,7 @@ function draw() {
         ftg.mats.shadowStamp.setProjectionUniform( scene.pMatrix );
         ftg.mats.bumpMap.setProjectionUniform( scene.pMatrix );
 
-        var d = new Date();
-        var rot = Math.sin(d.getTime()*0.001);
-        var rot2 = Math.cos(d.getTime()*0.001);
-
-        ftg.mats.bumpMap.setDirectionalLight( [0,rot2,rot], [1,1,1] );
+        ftg.mats.bumpMap.setDirectionalLight( scene.lightPos, [1,1,1] );
 
         mvPushMatrix( scene );  
         scene.planeSpan.drawArrays( scene.mvMatrix, scene.rt.intermediate );
@@ -223,18 +222,38 @@ function draw() {
 
 function animate() {
 
-    /* Shift camera x & y.  Browser window is the available screen and
-       it ranges from normalized -1 to 1 in x and y. */
-    scene.cameraPos = [0,0,1];
-    var w = $(window).width();
-    var h = $(window).height();
-    var nw = (scene.mouseX - (w/2))/w*2;
-    var nh = (scene.mouseY - (h/2))/h*2;
+    if ( scene.animateCamera ) {
 
-    var MOVESCALE = -scene.closestZ/2.3;
+        /* Shift camera x & y.  Browser window is the available screen and
+           it ranges from normalized -1 to 1 in x and y. */
+        var w = $(window).width();
+        var h = $(window).height();
+        var nw = (scene.mouseX - (w/2))/w*2;
+        var nh = (scene.mouseY - (h/2))/h*2;
 
-    scene.cameraPos[0] = nw * -MOVESCALE;
-    scene.cameraPos[1] = nh * MOVESCALE;
+        var MOVESCALE = -scene.closestZ/2.3;
+
+        scene.cameraPos[0] = nw * -MOVESCALE;
+        scene.cameraPos[1] = nh * MOVESCALE;
+    }
+    else
+    {
+        // animate the directional light in an arc instead
+
+        var w = $(window).width();
+        var h = $(window).height();
+        var nw = (scene.mouseX - (w/2))/w*2;
+        var nh = (scene.mouseY - (h/2))/h*2;
+
+        scene.lightPos[0] = -nw;
+        scene.lightPos[1] = -nh;
+
+        // naively make z flatten out when we are near the 'edges'
+        var dist = Math.max(Math.abs(nw),Math.abs(nh));
+        scene.lightPos[2] = -(1-dist);
+    }
+
+
 }
 
 
@@ -286,6 +305,13 @@ function webGLStart() {
     });
     scene.mouseX = scene.mouseY = 0;
 
+    $(document).keypress( function( e ) {
+        var e = window.event || e;
+
+        if ( e.keyCode == 32 ) // space
+            scene.animateCamera = !scene.animateCamera;
+    });
+        
     /* cyan-green */
     gl.clearColor( 41/256, 69/256, 57/256, 1.0 );
     //gl.enable( gl.DEPTH_TEST );
