@@ -86,6 +86,106 @@
                        gl_FragColor = vec4( 0.0, 0.0, 0.0, col.a );
                    }
     </SCRIPT>
+
+
+    <SCRIPT id="vbump" type="x-shader/x-vertex">
+                   attribute vec3 aVertexPosition;
+                   attribute vec3 aVertexNormal;
+                   attribute vec3 aVertexTangent;
+                   attribute vec2 aTextureCoord;
+
+                   uniform mat4 uMVMatrix;
+                   uniform mat4 uPMatrix;
+                   uniform mat3 uNMatrix;
+
+                   uniform mat4 uBoxMatrix;
+
+                   uniform vec3 uLightDirection;
+                   uniform vec3 uLightColor;
+
+                   varying vec2 vTextureCoord;
+                   varying vec3 vLightDir;
+                   varying vec3 vEyeDir;
+
+                   void main( void ) {
+                       gl_Position = uPMatrix * uMVMatrix * uBoxMatrix * vec4(aVertexPosition, 1 );
+                       vTextureCoord = aTextureCoord;
+
+                       //vec3 n = normalize(uNMatrix * aVertexNormal);
+                       //vec3 t = normalize(uNMatrix * aVertexTangent);
+                       vec3 n = normalize(aVertexNormal);
+                       vec3 t = normalize(aVertexTangent);
+                       vec3 b = cross(n, t);
+
+                       //vec3 p = vec3(uNMatrix * -normalize(uLightDirection));
+                       vec3 p = vec3(-normalize(uLightDirection));
+
+                       vLightDir.x = dot(p, t);
+                       vLightDir.y = dot(p, b);
+                       vLightDir.z = dot(p, n);
+
+                       vEyeDir = vec3(uMVMatrix * vec4(aVertexPosition, 1));
+
+                       vEyeDir.x = dot(vEyeDir, t);
+                       vEyeDir.y = dot(vEyeDir, b);
+                       vEyeDir.z = dot(vEyeDir, n);
+
+                   }
+    </SCRIPT>
+
+    <SCRIPT id="fbump" type="x-shader/x-fragment">
+                   precision mediump float;
+
+                   varying vec2 vTextureCoord;
+                   varying vec3 vLightDir;
+                   varying vec3 vEyeDir;
+
+                   uniform vec3 uLightColor;
+                   
+                   uniform sampler2D uSampler;
+                   uniform sampler2D uNormalSampler;
+
+                   void main( void ) {
+                       vec3 eyeDir = normalize(vEyeDir);
+                       vec3 lightDir = normalize(vLightDir);
+
+                       vec4 nCol = texture2D( uNormalSampler, vTextureCoord );
+                       vec3 map = normalize(nCol.xyz * 2.0 - 1.0);
+
+                       // diffuse
+                       //float litContrib = max(dot(map, lightDir), 0.0); // "Standard Lambert"
+                       float litContrib = dot(map, lightDir)*0.5 + 0.5; // "Half-Lambert"
+                       vec4 litColor = vec4(litContrib * uLightColor, 1);
+
+
+                       vec4 col = texture2D( uSampler, vec2( vTextureCoord.s, vTextureCoord.t ) );
+
+                       gl_FragColor = col*litColor;
+                   }
+
+                   void ex_main( void ) {
+                       vec3 eyeDir = normalize(vEyeDir);
+                       vec3 lightDir = normalize(vLightDir);
+
+                       vec4 nCol = texture2D( uNormalSampler, vTextureCoord );
+                       vec3 map = normalize(nCol.xyz * 2.0 - 1.0);
+
+                       // diffuse
+                       float litContrib = max(dot(map, lightDir), 0.0);
+                       vec4 litColor = litContrib * vec4(uLightColor, 1);
+
+                       //specular
+                       vec3 reflectDir = reflect(lightDir, map);
+                       float specContrib = max(dot(eyeDir, reflectDir), 0.0);
+                       specContrib = pow(specContrib, 3.0); // hardcoded specular power!!!
+                       vec4 specColor = specContrib * vec4(1,1,1,1); // hardcoded specular colour!!!
+
+                       vec4 col = texture2D( uSampler, vec2( vTextureCoord.s, vTextureCoord.t ) );
+
+                       gl_FragColor = col*litColor + specColor;
+                   }
+    </SCRIPT>
+
     
   </HEAD>
 

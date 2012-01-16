@@ -161,6 +161,28 @@ function initShaders() {
     }
     shadowStamp.initShaderById( "shadowStamp", "vdef", "fshadowstamp" );
 
+
+    // Graham test shader 2:
+    // Normal maps
+    var bumpMap = new ftgMaterial();
+    bumpMap.initShaderValues = function() {
+        this.bindAttribute( "aVertexPosition" );
+        this.bindAttribute( "aVertexNormal" );
+        this.bindAttribute( "aVertexTangent" );
+        this.bindAttribute( "aTextureCoord" );
+
+        this.initUniform( "uPMatrix" );
+        this.initUniform( "uMVMatrix" );
+        this.initUniform( "uNMatrix" );
+        this.initUniform( "uSampler" );
+        this.initUniform( "uNormalSampler" );
+
+        this.initUniform( "uBoxMatrix" );
+
+        this.initUniform( "uLightDirection" );
+        this.initUniform( "uLightColor" );
+    }
+    bumpMap.initShaderById( "bumpMap", "vbump", "fbump" );
 }
 
 
@@ -177,6 +199,13 @@ function draw() {
         ftg.mats.def.setProjectionUniform( scene.pMatrix );
         ftg.mats.silhouette.setProjectionUniform( scene.pMatrix );
         ftg.mats.shadowStamp.setProjectionUniform( scene.pMatrix );
+        ftg.mats.bumpMap.setProjectionUniform( scene.pMatrix );
+
+        var d = new Date();
+        var rot = Math.sin(d.getTime()*0.001);
+        var rot2 = Math.cos(d.getTime()*0.001);
+
+        ftg.mats.bumpMap.setDirectionalLight( [0,rot2,rot], [1,1,1] );
 
         mvPushMatrix( scene );  
         scene.planeSpan.drawArrays( scene.mvMatrix, scene.rt.intermediate );
@@ -268,4 +297,7 @@ function webGLStart() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
     tick();
+
+
+
 }
