@@ -117,14 +117,16 @@
                        vec3 t = normalize(aVertexTangent);
                        vec3 b = cross(n, t);
 
-                       //vec3 p = vec3(uNMatrix * -normalize(uLightDirection));
-                       vec3 p = vec3(-normalize(uLightDirection));
+                       vec3 p = uNMatrix * normalize(uLightDirection);
+                       //vec3 p = vec3(uNMatrix * normalize(uLightDirection));
+                       //vec3 p = vec3(-normalize(uLightDirection));
 
                        vLightDir.x = dot(p, t);
                        vLightDir.y = dot(p, b);
                        vLightDir.z = dot(p, n);
 
-                       vEyeDir = vec3(uMVMatrix * vec4(aVertexPosition, 1));
+                       //vEyeDir = vec3(uMVMatrix * vec4(aVertexPosition, 1));
+                       vEyeDir = uNMatrix * aVertexPosition;
 
                        vEyeDir.x = dot(vEyeDir, t);
                        vEyeDir.y = dot(vEyeDir, b);

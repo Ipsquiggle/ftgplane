@@ -245,12 +245,12 @@ function animate() {
         var nw = (scene.mouseX - (w/2))/w*2;
         var nh = (scene.mouseY - (h/2))/h*2;
 
-        scene.lightPos[0] = -nw;
-        scene.lightPos[1] = -nh;
+        scene.lightPos[0] = nw;
+        scene.lightPos[1] = nh;
 
         // naively make z flatten out when we are near the 'edges'
         var dist = Math.max(Math.abs(nw),Math.abs(nh));
-        scene.lightPos[2] = -(1-dist);
+        scene.lightPos[2] = 1-dist;
     }
 
 

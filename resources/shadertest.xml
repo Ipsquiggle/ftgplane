@@ -17,10 +17,10 @@
       <PutBox name="cache/tiles/dev/3.bmp" material="bumpMap" degrees="0" tx="128" ty="0" ex="64" ey="64">
           <Key name="bumpMap">/resources/cache/tiles/shadertest/04_dot4.png</Key>
       </PutBox>
-      <PutBox name="cache/tiles/dev/3.bmp" material="bumpMap" degrees="90" tx="192" ty="0" ex="64" ey="64">
+      <PutBox name="cache/tiles/dev/3.bmp" material="bumpMap" degrees="90" tx="256" ty="0" ex="64" ey="64">
           <Key name="bumpMap">/resources/cache/tiles/shadertest/04_dot4.png</Key>
       </PutBox>
-      <PutBox name="cache/tiles/dev/3.bmp" material="bumpMap" degrees="-90" tx="256" ty="0" ex="64" ey="64">
+      <PutBox name="cache/tiles/dev/3.bmp" material="bumpMap" degrees="-90" tx="384" ty="0" ex="64" ey="64">
           <Key name="bumpMap">/resources/cache/tiles/shadertest/04_dot4.png</Key>
       </PutBox>
 
