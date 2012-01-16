@@ -153,8 +153,8 @@
                        vec3 map = normalize(nCol.xyz * 2.0 - 1.0);
 
                        // diffuse
-                       float litContrib = max(dot(map, lightDir), 0.0); // "Standard Lambert"
-                       //float litContrib = dot(map, lightDir)*0.5 + 0.5; // "Half-Lambert"
+                       //float litContrib = max(dot(map, lightDir), 0.0); // "Standard Lambert"
+                       float litContrib = dot(map, lightDir)*0.5 + 0.5; // "Half-Lambert"
                        vec4 litColor = vec4(litContrib * uLightColor, 1);
 
 
