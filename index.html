@@ -111,10 +111,10 @@
                        gl_Position = uPMatrix * uMVMatrix * uBoxMatrix * vec4(aVertexPosition, 1 );
                        vTextureCoord = aTextureCoord;
 
-                       vec3 n = normalize(uNMatrix * aVertexNormal);
-                       vec3 t = normalize(uNMatrix * aVertexTangent);
-                       //vec3 n = normalize(aVertexNormal);
-                       //vec3 t = normalize(aVertexTangent);
+                       //vec3 n = normalize(uNMatrix * aVertexNormal);
+                       //vec3 t = normalize(uNMatrix * aVertexTangent);
+                       vec3 n = normalize(aVertexNormal);
+                       vec3 t = normalize(aVertexTangent);
                        vec3 b = cross(n, t);
 
                        vec3 p = uNMatrix * normalize(uLightDirection);
@@ -159,7 +159,6 @@
                        float litContrib = dot(map, lightDir)*0.5 + 0.5; // "Half-Lambert"
                        vec4 litColor = vec4(litContrib * uLightColor, 1);
 
-
                        vec4 col = texture2D( uSampler, vec2( vTextureCoord.s, vTextureCoord.t ) );
 
                        gl_FragColor = col*litColor;
@@ -185,6 +184,51 @@
                        vec4 col = texture2D( uSampler, vec2( vTextureCoord.s, vTextureCoord.t ) );
 
                        gl_FragColor = col*litColor + specColor;
+                   }
+    </SCRIPT>
+
+    <SCRIPT id="ftoonbump" type="x-shader/x-fragment">
+                   precision mediump float;
+
+                   varying vec2 vTextureCoord;
+                   varying vec3 vLightDir;
+                   varying vec3 vEyeDir;
+
+                   uniform vec3 uLightColor;
+                   
+                   uniform sampler2D uSampler;
+                   uniform sampler2D uNormalSampler;
+
+                   void main( void ) {
+                       vec3 eyeDir = normalize(vEyeDir);
+                       vec3 lightDir = normalize(vLightDir);
+
+                       vec4 nCol = texture2D( uNormalSampler, vTextureCoord );
+                       vec3 map = normalize(nCol.xyz * 2.0 - 1.0);
+
+                       // diffuse
+                       //float litContrib = max(dot(map, lightDir), 0.0); // "Standard Lambert"
+                       float litContrib = dot(map, lightDir)*0.5 + 0.5; // "Half-Lambert"
+
+                       // step shading
+                       if ( litContrib < 0.2 ) litContrib = 0.2;
+                       else if ( litContrib < 0.5 ) litContrib = smoothstep(0.2,0.22,litContrib)*0.3+0.2;
+                       else if ( litContrib < 0.65 ) litContrib = smoothstep(0.5, 0.52, litContrib)*0.15+0.5;
+                       else if ( litContrib < 0.9 ) litContrib = smoothstep(0.65, 0.67, litContrib)*0.25+0.65;
+                       else litContrib = smoothstep(0.9,0.92,litContrib)*0.1+0.9;
+                       //if ( litContrib < 0.2 ) litContrib = 0.2;
+                       //else if ( litContrib < 0.5 ) litContrib = 0.5;
+                       //else if ( litContrib < 0.65 ) litContrib = 0.65;
+                       //else if ( litContrib < 0.9 ) litContrib = 0.9;
+                       //else litContrib = 1.0;
+
+
+                       vec4 litColor = vec4(litContrib * uLightColor, 1);
+
+
+                       vec4 col = texture2D( uSampler, vec2( vTextureCoord.s, vTextureCoord.t ) );
+
+                       gl_FragColor = col*litColor;
                    }
     </SCRIPT>
 

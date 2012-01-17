@@ -185,7 +185,7 @@ function initShaders() {
         this.initUniform( "uLightDirection" );
         this.initUniform( "uLightColor" );
     }
-    bumpMap.initShaderById( "bumpMap", "vbump", "fbump" );
+    bumpMap.initShaderById( "bumpMap", "vbump", "ftoonbump" );
 }
 
 
@@ -254,6 +254,15 @@ function animate() {
     }
 
 
+    var plane = scene.planeSpan.planes[scene.planeSpan.drawOrder[0][0]];
+    //var plane = scene.planeSpan.planes[scene.planeSpan.drawOrder[scene.planeSpan.drawOrder.length-1][0]];
+    var box = plane.obbs[0];
+
+    //var rotate = mat4.create();
+    //mat4.rotate(rotate, 3.1,[0,0,1],box.mat);
+
+    box.deg = parseFloat(box.deg) + 1.1;
+    box.buildMatrix();
 }
 
 
