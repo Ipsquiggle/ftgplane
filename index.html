@@ -111,10 +111,10 @@
                        gl_Position = uPMatrix * uMVMatrix * uBoxMatrix * vec4(aVertexPosition, 1 );
                        vTextureCoord = aTextureCoord;
 
-                       //vec3 n = normalize(uNMatrix * aVertexNormal);
-                       //vec3 t = normalize(uNMatrix * aVertexTangent);
-                       vec3 n = normalize(aVertexNormal);
-                       vec3 t = normalize(aVertexTangent);
+                       vec3 n = normalize(uNMatrix * aVertexNormal);
+                       vec3 t = normalize(uNMatrix * aVertexTangent);
+                       //vec3 n = normalize(aVertexNormal);
+                       //vec3 t = normalize(aVertexTangent);
                        vec3 b = cross(n, t);
 
                        vec3 p = uNMatrix * normalize(uLightDirection);

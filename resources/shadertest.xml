@@ -15,20 +15,20 @@
 
   <Layer zDistance="-900">
       <PutBox name="cache/tiles/dev/3.bmp" material="bumpMap" degrees="0" tx="128" ty="0" ex="64" ey="64">
-          <Key name="bumpMap">/resources/cache/tiles/shadertest/04_dot4.png</Key>
+          <Key name="bumpMap">/resources/cache/tiles/shadertest/IntP_Brick_NormalMap.png</Key>
       </PutBox>
       <PutBox name="cache/tiles/dev/3.bmp" material="bumpMap" degrees="90" tx="256" ty="0" ex="64" ey="64">
-          <Key name="bumpMap">/resources/cache/tiles/shadertest/04_dot4.png</Key>
+          <Key name="bumpMap">/resources/cache/tiles/shadertest/IntP_Brick_NormalMap.png</Key>
       </PutBox>
       <PutBox name="cache/tiles/dev/3.bmp" material="bumpMap" degrees="-90" tx="384" ty="0" ex="64" ey="64">
-          <Key name="bumpMap">/resources/cache/tiles/shadertest/04_dot4.png</Key>
+          <Key name="bumpMap">/resources/cache/tiles/shadertest/IntP_Brick_NormalMap.png</Key>
       </PutBox>
 
       <PutBox name="cache/tiles/dev/2.bmp" material="bumpMap" degrees="90" tx="0" ty="128" ex="64" ey="64">
-          <Key name="bumpMap">/resources/cache/tiles/shadertest/11_onetile.png</Key>
+          <Key name="bumpMap">/resources/cache/tiles/shadertest/IntP_Brick_NormalMap.png</Key>
       </PutBox>
       <PutBox name="cache/tiles/dev/1.bmp" material="bumpMap" degrees="-90" tx="128" ty="-128" ex="64" ey="64">
-          <Key name="bumpMap">/resources/cache/tiles/shadertest/08_normalmap.png</Key>
+          <Key name="bumpMap">/resources/cache/tiles/shadertest/IntP_Brick_NormalMap.png</Key>
       </PutBox>
 
     <PutBox name="cache/tiles/dev/3.bmp" degrees="0" tx="-128" ty="0" ex="64" ey="64"/>
