@@ -210,10 +210,8 @@ function draw() {
     {
         gl.viewport( 0, 0, gl.viewportWidth, gl.viewportHeight );
 
-        scene.closestZ = scene.planeSpan.getClosestPlaneZ();
-
         mat4.perspective( 45, gl.viewportWidth / gl.viewportHeight, 1.0, 40960, scene.pMatrix );
-        mat4.lookAt( scene.cameraPos, [0,0,scene.closestZ], [0,1,0], scene.mvMatrix );
+        mat4.lookAt( scene.cameraPos, [0,0,0], [0,1,0], scene.mvMatrix );
 
         // Fixme: this isn't going to scale.
         ftg.mats.def.setProjectionUniform( scene.pMatrix );
@@ -224,7 +222,7 @@ function draw() {
         ftg.mats.bumpMap.setDirectionalLight( scene.lightPos, [1,1,1] );
 
         mvPushMatrix( scene );  
-        scene.planeSpan.drawArrays( scene.mvMatrix, scene.rt.intermediate );
+        scene.planeSpan.drawArrays( scene.mvMatrix);
         mvPopMatrix( scene );
     }
 
@@ -271,15 +269,15 @@ function animate() {
     }
 
 
-    var plane = scene.planeSpan.planes[scene.planeSpan.drawOrder[0][0]];
-    //var plane = scene.planeSpan.planes[scene.planeSpan.drawOrder[scene.planeSpan.drawOrder.length-1][0]];
-    var box = plane.obbs[0];
+    //var plane = scene.planeSpan.planes[scene.planeSpan.drawOrder[0][0]];
+    ////var plane = scene.planeSpan.planes[scene.planeSpan.drawOrder[scene.planeSpan.drawOrder.length-1][0]];
+    //var box = plane.obbs[0];
 
-    //var rotate = mat4.create();
-    //mat4.rotate(rotate, 3.1,[0,0,1],box.mat);
+    ////var rotate = mat4.create();
+    ////mat4.rotate(rotate, 3.1,[0,0,1],box.mat);
 
-    box.deg = parseFloat(box.deg) + 1.1;
-    box.buildMatrix();
+    //box.deg = parseFloat(box.deg) + 1.1;
+    //box.buildMatrix();
 }
 
 
@@ -295,13 +293,7 @@ function tick() {
     draw(); 
 }
 
-function setCanvasSize() {
-    var canvas = document.getElementById( 'maincanvas' );
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    gl.viewportWidth = canvas.width;
-    gl.viewportHeight = canvas.height;
-}
+
 
 function webGLStart() {
     var canvas = document.getElementById( 'maincanvas' );
@@ -314,7 +306,6 @@ function webGLStart() {
     gl = WebGLUtils.setupWebGL(canvas);
     gl.viewportWidth  = canvas.width;
     gl.viewportHeight = canvas.height;
-    setCanvasSize();
 
     ftg.init( gl );
 
