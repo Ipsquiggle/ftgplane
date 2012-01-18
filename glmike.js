@@ -54,7 +54,7 @@ scene.closestZ = 1;
 scene.rt = {};
 scene.animateCamera = false;
 scene.cameraPos = [0,0,1];
-scene.lightPos = [0,1,1];
+scene.lightPos = [1,1,1];
 
 //
 // Begin helpers
@@ -130,6 +130,7 @@ function initShaders() {
         this.initUniform( "uPMatrix" );
         this.initUniform( "uMVMatrix" );
         this.initUniform( "uSampler" );
+        this.initUniform( "uTextureSize" );
     }
 
     /* Post processing shaders */
@@ -145,9 +146,25 @@ function initShaders() {
         this.initUniform( "uPMatrix" );
         this.initUniform( "uMVMatrix" );
         this.initUniform( "uSampler" );
+        this.initUniform( "uTextureSize" );
         this.initUniform( "grayness" );
     }
     postGrayscale.initShaderById( "postGrayscale", "vpost", "fpostGrayscale" );
+
+    // Full screen blur
+    var postBlur = new ftgMaterial();
+    postBlur.initShaderValues = function() {
+        this.bindAttribute( "aVertexPosition" );
+        this.bindAttribute( "aTextureCoord" );
+
+        this.initUniform( "uPMatrix" );
+        this.initUniform( "uMVMatrix" );
+        this.initUniform( "uSampler" );
+        this.initUniform( "uTextureSize" );
+        this.initUniform( "radius" );
+    }
+    postBlur.initShaderById( "postBlur", "vpost", "fpostblur" );
+
 
 
     // Graham test shader 1:
@@ -327,6 +344,7 @@ function webGLStart() {
     //gl.depthFunc( gl.ALWAYS );
     gl.enable( gl.BLEND );
     gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
+    //gl.blendFunc( gl.SRC_ALPHA, gl.ONE );
 
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);

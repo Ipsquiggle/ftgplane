@@ -18,6 +18,8 @@
                    attribute vec3 aVertexPosition;
                    attribute vec2 aTextureCoord;
 
+                   uniform vec2 uTextureSize;
+
                    uniform mat4 uMVMatrix;
                    uniform mat4 uPMatrix;
                    varying vec2 vTextureCoord;
@@ -54,6 +56,41 @@
                        //vec3 gray = mix( col.rgb, vec3( dot( col.rgb, vec3( 0.3, 0.59, 0.11 ) ) ), 0.8 );
                        
                        gl_FragColor = vec4( gray, col.a );
+                   }
+    </SCRIPT>
+
+
+    <SCRIPT id="fpostblur" type="x-shader/x-fragment">
+                   precision mediump float;
+                   varying vec2 vTextureCoord;
+                   uniform sampler2D uSampler;
+                   uniform vec2 uTextureSize;
+
+                   uniform float radius;
+
+
+                   void main( void ) {
+                       float oh = radius / uTextureSize[0];
+                       float ov = radius / uTextureSize[1];
+
+                       vec4 col = texture2D( uSampler, vec2( vTextureCoord.s, vTextureCoord.t ) );
+                       vec4 col2 = texture2D( uSampler, vec2( vTextureCoord.s+oh, vTextureCoord.t+ov ) );
+
+                       vec4 sum = vec4(0,0,0,0);
+                       sum += texture2D( uSampler, vec2( vTextureCoord.s-oh, vTextureCoord.t-ov ) )*0.0625;
+                       sum += texture2D( uSampler, vec2( vTextureCoord.s   , vTextureCoord.t-ov ) )*0.125;
+                       sum += texture2D( uSampler, vec2( vTextureCoord.s+oh, vTextureCoord.t-ov ) )*0.0625;
+                       sum += texture2D( uSampler, vec2( vTextureCoord.s-oh, vTextureCoord.t    ) )*0.125;
+                       sum += texture2D( uSampler, vec2( vTextureCoord.s   , vTextureCoord.t    ) )*0.25;
+                       sum += texture2D( uSampler, vec2( vTextureCoord.s+oh, vTextureCoord.t    ) )*0.125;
+                       sum += texture2D( uSampler, vec2( vTextureCoord.s-oh, vTextureCoord.t+ov ) )*0.0625;
+                       sum += texture2D( uSampler, vec2( vTextureCoord.s   , vTextureCoord.t+ov ) )*0.125;
+                       sum += texture2D( uSampler, vec2( vTextureCoord.s+oh, vTextureCoord.t+ov ) )*0.0625;
+
+
+                       //gl_FragColor = texture2D( uSampler, vec2( 0.1,0.1 ) );
+                       gl_FragColor = sum;
+                       //gl_FragColor = vec4(col.rgb, col2.a);
                    }
     </SCRIPT>
 
