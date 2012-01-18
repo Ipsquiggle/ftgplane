@@ -1,6 +1,0 @@
-IntP_Brick_NormalMap.png
-	by DwX
-	from http://commons.wikimedia.org/wiki/File:IntP_Brick_NormalMap.png
-
-lighting_test1_*.png
-	by Frogtoss Games

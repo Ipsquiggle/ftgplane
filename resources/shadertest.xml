@@ -4,8 +4,7 @@
 
   <!--<Layer zDistance="-900" blitMaterial="postBlur">-->
   <Layer zDistance="-900">
-      <PutBox name="cache/tiles/dev/1.bmp" degrees="-90" tx="128" ty="0" ex="64" ey="64"/>
-      <PutBox name="cache/tiles/shadertest/alphatest.png" degrees="0" tx="0" ty="0" ex="64" ey="64">
+      <PutBox name="cache/tiles/shadertest/alphatest.png" degrees="0" tx="0" ty="0" ex="256" ey="256">
       </PutBox>
 
   </Layer>

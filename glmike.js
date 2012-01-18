@@ -93,22 +93,9 @@ function initBuffers( panel ) {
     if ( panel == 'null' ) {
         // Foreground one
         var p = scene.planeSpan.allocPlane();
-        p.addObb( [-2,0,0], [0.75,1.25], 90.0,  "texture.gif", undefined );
-        p.addObb( [0,0,0], [0.75,1.25], 45.0,  "texture.gif", ftg.mats.silouhette );
-        //p.addObb( [0,0,0], [0.75,1.25], 45.0,  "texture.gif", undefined );
-        p.addZ( -4.0 );
+        p.addObb( [0,0,0], [0.25,0.25], 0.0,  "alphatest.png" );
+        p.material = ftg.mats['post'];
 
-        // Background one
-        var p = scene.planeSpan.allocPlane();
-        p.addObb( [0,0,0], [1.5,1.5], 180.0, "texture.gif" );
-        p.addObb( [-2,-2,0], [1.25,1.25], 0.0,  "nehe.gif" );
-        p.addZ( -8.0 );
-
-        var p = scene.planeSpan.allocPlane();
-        p.addObb( [0,-1,0], [0.75,1.25], -45.0,  "nehe.gif" );    
-        p.addZ( -10.0 );
-    } else {
-        scene.planeSpan.loadPanel( "/resources/" + panel + ".xml" );
     }
 
     scene.planeSpan.updateZOrder();
@@ -116,93 +103,7 @@ function initBuffers( panel ) {
     /* rendertarget setup */
 
     // Blit to screen on command or after no more planes exist
-    scene.rt.intermediate = new ftgRenderTarget();
-    scene.rt.intermediate.init( gl.viewportWidth, gl.viewportHeight );
 
-}
-
-function initShaders() {
-    // postprocessing shader values 
-    var postShaderValues = function() {
-        this.bindAttribute( "aVertexPosition" );
-        this.bindAttribute( "aTextureCoord" );
-
-        this.initUniform( "uPMatrix" );
-        this.initUniform( "uMVMatrix" );
-        this.initUniform( "uSampler" );
-        this.initUniform( "uTextureSize" );
-    }
-
-    /* Post processing shaders */
-    var post = new ftgMaterial();
-    post.initShaderValues = postShaderValues;
-    post.initShaderById( "post", "vpost", "fpost" );
-
-    var postGrayscale = new ftgMaterial();
-    postGrayscale.initShaderValues = function() {
-        this.bindAttribute( "aVertexPosition" );
-        this.bindAttribute( "aTextureCoord" );
-
-        this.initUniform( "uPMatrix" );
-        this.initUniform( "uMVMatrix" );
-        this.initUniform( "uSampler" );
-        this.initUniform( "uTextureSize" );
-        this.initUniform( "grayness" );
-    }
-    postGrayscale.initShaderById( "postGrayscale", "vpost", "fpostGrayscale" );
-
-    // Full screen blur
-    var postBlur = new ftgMaterial();
-    postBlur.initShaderValues = function() {
-        this.bindAttribute( "aVertexPosition" );
-        this.bindAttribute( "aTextureCoord" );
-
-        this.initUniform( "uPMatrix" );
-        this.initUniform( "uMVMatrix" );
-        this.initUniform( "uSampler" );
-        this.initUniform( "uTextureSize" );
-        this.initUniform( "radius" );
-    }
-    postBlur.initShaderById( "postBlur", "vpost", "fpostblur" );
-
-
-
-    // Graham test shader 1:
-    // Shadow stamping
-    var shadowStamp = new ftgMaterial();
-    shadowStamp.initShaderValues = function() {
-        this.bindAttribute( "aVertexPosition" );
-        this.bindAttribute( "aTextureCoord" );
-
-        this.initUniform( "uPMatrix" );
-        this.initUniform( "uMVMatrix" );
-        this.initUniform( "uSampler" );
-        this.initUniform( "uBoxMatrix" );
-    }
-    shadowStamp.initShaderById( "shadowStamp", "vdef", "fshadowstamp" );
-
-
-    // Graham test shader 2:
-    // Normal maps
-    var bumpMap = new ftgMaterial();
-    bumpMap.initShaderValues = function() {
-        this.bindAttribute( "aVertexPosition" );
-        this.bindAttribute( "aVertexNormal" );
-        this.bindAttribute( "aVertexTangent" );
-        this.bindAttribute( "aTextureCoord" );
-
-        this.initUniform( "uPMatrix" );
-        this.initUniform( "uMVMatrix" );
-        this.initUniform( "uNMatrix" );
-        this.initUniform( "uSampler" );
-        this.initUniform( "uNormalSampler" );
-
-        this.initUniform( "uBoxMatrix" );
-
-        this.initUniform( "uLightDirection" );
-        this.initUniform( "uLightColor" );
-    }
-    bumpMap.initShaderById( "bumpMap", "vbump", "ftoonbump" );
 }
 
 
@@ -215,69 +116,12 @@ function draw() {
 
         // Fixme: this isn't going to scale.
         ftg.mats.def.setProjectionUniform( scene.pMatrix );
-        ftg.mats.silhouette.setProjectionUniform( scene.pMatrix );
-        ftg.mats.shadowStamp.setProjectionUniform( scene.pMatrix );
-        ftg.mats.bumpMap.setProjectionUniform( scene.pMatrix );
-
-        ftg.mats.bumpMap.setDirectionalLight( scene.lightPos, [1,1,1] );
 
         mvPushMatrix( scene );  
-        scene.planeSpan.drawArrays( scene.mvMatrix);
+        scene.planeSpan.drawArrays( scene.mvMatrix );
         mvPopMatrix( scene );
     }
 
-    // Intermediate to screen
-    {
-        ftg.mats.post.useProgram();
-
-        ftg.mats.post.bindTextures( [scene.rt.intermediate.texture] );
-        ftg.drawTextureToViewport( ftg.mats.post, gl.viewportWidth, gl.viewportHeight );
-    }
-}
-
-function animate() {
-
-    if ( scene.animateCamera ) {
-
-        /* Shift camera x & y.  Browser window is the available screen and
-           it ranges from normalized -1 to 1 in x and y. */
-        var w = $(window).width();
-        var h = $(window).height();
-        var nw = (scene.mouseX - (w/2))/w*2;
-        var nh = (scene.mouseY - (h/2))/h*2;
-
-        var MOVESCALE = -scene.closestZ/2.3;
-
-        scene.cameraPos[0] = nw * -MOVESCALE;
-        scene.cameraPos[1] = nh * MOVESCALE;
-    }
-    else
-    {
-        // animate the directional light in an arc instead
-
-        var w = $(window).width();
-        var h = $(window).height();
-        var nw = (scene.mouseX - (w/2))/w*2;
-        var nh = (scene.mouseY - (h/2))/h*2;
-
-        scene.lightPos[0] = nw;
-        scene.lightPos[1] = nh;
-
-        // naively make z flatten out when we are near the 'edges'
-        var dist = Math.max(Math.abs(nw),Math.abs(nh));
-        scene.lightPos[2] = 1-dist;
-    }
-
-
-    //var plane = scene.planeSpan.planes[scene.planeSpan.drawOrder[0][0]];
-    ////var plane = scene.planeSpan.planes[scene.planeSpan.drawOrder[scene.planeSpan.drawOrder.length-1][0]];
-    //var box = plane.obbs[0];
-
-    ////var rotate = mat4.create();
-    ////mat4.rotate(rotate, 3.1,[0,0,1],box.mat);
-
-    //box.deg = parseFloat(box.deg) + 1.1;
-    //box.buildMatrix();
 }
 
 
@@ -285,9 +129,6 @@ function animate() {
 function tick() {
     // Update timer
     requestAnimFrame( tick );
-
-    // Update scene
-    animate();
 
     // Draw scene
     draw(); 
@@ -310,7 +151,6 @@ function webGLStart() {
     ftg.init( gl );
 
     scene.panel = getArg('panel');
-    initShaders();
     initBuffers( scene.panel );
 
 
