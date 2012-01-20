@@ -184,8 +184,28 @@ function initShaders() {
 
     // Graham test shader 2:
     // Normal maps
-    var bumpMap = new ftgMaterial();
-    bumpMap.initShaderValues = function() {
+    //var bumpMap = new ftgMaterial();
+    //bumpMap.initShaderValues = function() {
+        //this.bindAttribute( "aVertexPosition" );
+        //this.bindAttribute( "aVertexNormal" );
+        //this.bindAttribute( "aVertexTangent" );
+        //this.bindAttribute( "aTextureCoord" );
+
+        //this.initUniform( "uPMatrix" );
+        //this.initUniform( "uMVMatrix" );
+        //this.initUniform( "uNMatrix" );
+        //this.initUniform( "uSampler" );
+        //this.initUniform( "uNormalSampler" );
+
+        //this.initUniform( "uBoxMatrix" );
+
+        //this.initUniform( "uLightDirection" );
+        //this.initUniform( "uLightColor" );
+    //}
+    //bumpMap.initShaderById( "bumpMap", "vbump", "ftoonbump" );
+    
+    var normalAndDepth = new ftgMaterial();
+    normalAndDepth.initShaderValues = function() {
         this.bindAttribute( "aVertexPosition" );
         this.bindAttribute( "aVertexNormal" );
         this.bindAttribute( "aVertexTangent" );
@@ -198,11 +218,8 @@ function initShaders() {
         this.initUniform( "uNormalSampler" );
 
         this.initUniform( "uBoxMatrix" );
-
-        this.initUniform( "uLightDirection" );
-        this.initUniform( "uLightColor" );
     }
-    bumpMap.initShaderById( "bumpMap", "vbump", "ftoonbump" );
+    normalAndDepth.initShaderById( "normalAndDepth", "vNormalAndDepth", "fNormalAndDepth" );
 }
 
 
@@ -220,12 +237,14 @@ function draw() {
         ftg.mats.def.setProjectionUniform( scene.pMatrix );
         ftg.mats.silhouette.setProjectionUniform( scene.pMatrix );
         ftg.mats.shadowStamp.setProjectionUniform( scene.pMatrix );
-        ftg.mats.bumpMap.setProjectionUniform( scene.pMatrix );
+        ftg.mats.normalAndDepth.setProjectionUniform( scene.pMatrix );
+        //ftg.mats.bumpMap.setProjectionUniform( scene.pMatrix );
 
-        ftg.mats.bumpMap.setDirectionalLight( scene.lightPos, [1,1,1] );
+        //ftg.mats.bumpMap.setDirectionalLight( scene.lightPos, [1,1,1] );
 
         mvPushMatrix( scene );  
-        scene.planeSpan.drawArrays( scene.mvMatrix, scene.rt.intermediate );
+        scene.planeSpan.drawArrays( scene.mvMatrix, scene.rt.intermediate, undefined );
+        //scene.planeSpan.drawArrays( scene.mvMatrix, scene.rt.intermediate, undefined, ftg.mats['normalAndDepth'] );
         mvPopMatrix( scene );
     }
 

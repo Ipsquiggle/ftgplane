@@ -206,6 +206,68 @@
     </SCRIPT>
 
 
+    <SCRIPT id="vNormalAndDepth" type="x-shader/x-vertex">
+                   attribute vec3 aVertexPosition;
+                   attribute vec3 aVertexNormal;
+                   attribute vec3 aVertexTangent;
+                   attribute vec2 aTextureCoord;
+
+                   uniform mat4 uMVMatrix;
+                   uniform mat4 uPMatrix;
+                   uniform mat3 uNMatrix;
+
+                   uniform mat4 uBoxMatrix;
+
+                   varying vec2 vTextureCoord;
+                   varying mat3 vTangentFrame;
+
+                   void main( void ) {
+                       gl_Position = uPMatrix * uMVMatrix * uBoxMatrix * vec4( aVertexPosition, 1 );
+                       vTextureCoord = aTextureCoord;
+
+                       vec3 n = normalize( aVertexNormal );
+                       vec3 t = normalize( aVertexTangent );
+                       vec3 b = cross(n, t);
+
+                       vTangentFrame[0] = uNMatrix * b;
+                       vTangentFrame[1] = uNMatrix * t;
+                       vTangentFrame[2] = uNMatrix * n;
+                   }
+    </SCRIPT>
+
+
+    <SCRIPT id="fNormalAndDepth" type="x-shader/x-fragment">
+                   precision mediump float;
+
+                   varying vec2 vTextureCoord;
+
+WOO, I have screen space normals working. Now to get depth figured out.
+
+                   uniform sampler2D uSampler;
+                   uniform sampler2D uNormalSampler;
+
+                   uniform mat4 uMVMatrix;
+                   uniform mat4 uPMatrix;
+                   uniform mat3 uNMatrix;
+                   
+                   varying mat3 vTangentFrame;
+                   
+                   void main( void ) {
+                       vec4 nCol = texture2D( uNormalSampler, vTextureCoord );
+                       vec3 map = normalize(nCol.xyz * 2.0 - 1.0);
+
+                       map = normalize( vTangentFrame * map );
+
+                       vec4 col = texture2D( uSampler, vec2( vTextureCoord.s, vTextureCoord.t ) );
+
+
+
+                       gl_FragColor = vec4(0.5*map+0.5, col.a);
+                   }
+
+    </SCRIPT>
+
+
     <SCRIPT id="vbump" type="x-shader/x-vertex">
                    attribute vec3 aVertexPosition;
                    attribute vec3 aVertexNormal;
@@ -229,21 +291,16 @@
                        gl_Position = uPMatrix * uMVMatrix * uBoxMatrix * vec4(aVertexPosition, 1 );
                        vTextureCoord = aTextureCoord;
 
-                       //vec3 n = normalize(uNMatrix * aVertexNormal);
-                       //vec3 t = normalize(uNMatrix * aVertexTangent);
                        vec3 n = normalize(aVertexNormal);
                        vec3 t = normalize(aVertexTangent);
                        vec3 b = cross(n, t);
 
                        vec3 p = uNMatrix * normalize(uLightDirection);
-                       //vec3 p = vec3(uNMatrix * normalize(uLightDirection));
-                       //vec3 p = vec3(-normalize(uLightDirection));
 
                        vLightDir.x = dot(p, t);
                        vLightDir.y = dot(p, b);
                        vLightDir.z = dot(p, n);
 
-                       //vEyeDir = vec3(uMVMatrix * vec4(aVertexPosition, 1));
                        vEyeDir = uNMatrix * aVertexPosition;
 
                        vEyeDir.x = dot(vEyeDir, t);
@@ -252,6 +309,9 @@
 
                    }
     </SCRIPT>
+
+
+
 
     <SCRIPT id="fbump" type="x-shader/x-fragment">
                    precision mediump float;
@@ -349,14 +409,13 @@
                        gl_FragColor = col*litColor;
                    }
     </SCRIPT>
-
     
   </HEAD>
 
   <BODY onLoad="webGLStart()" style="width: 100%, height: 100%, body: 100%;">
 
     <CANVAS id="maincanvas" style="border: none; background-color: black;" width="1280" height="720"></CANVAS>
-    <P>Michael Labbe's plane demo</A>.
+    <P id="output">Michael Labbe's plane demo</P>
     
   </BODY>
 

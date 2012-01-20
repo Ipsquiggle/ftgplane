@@ -9,41 +9,39 @@
 
   <Layer zDistance="-1500">
     <PutBox name="cache/tiles/dev/3.bmp" degrees="0" tx="0" ty="0" ex="64" ey="64"/>
-    <PutBox name="cache/tiles/dev/2.bmp" degrees="90" tx="0" ty="64" ex="64" ey="64"/>
-    <PutBox name="cache/tiles/dev/1.bmp" degrees="-90" tx="0" ty="-64" ex="64" ey="64"/>
+    <PutBox name="cache/tiles/dev/2.bmp" degrees="90" tx="0" ty="128" ex="64" ey="64"/>
+    <PutBox name="cache/tiles/dev/1.bmp" material="normalAndDepth" degrees="-90" tx="0" ty="-128" ex="64" ey="64">
+          <Key name="bumpMap">/resources/cache/tiles/shadertest/crappy_sphere.png</Key>
+      </PutBox>
   </Layer>
 
-  <Layer zDistance="-900" blitMaterial="postBlur">
-  <!--<Layer zDistance="-900">-->
-      <PutBox name="cache/tiles/dev/3.bmp" material="bumpMap" degrees="132" tx="128" ty="128" ex="64" ey="64">
+  <!--<Layer zDistance="-900" blitMaterial="postBlur">-->
+  <Layer zDistance="-900">
+      <PutBox name="cache/tiles/dev/3.bmp" material="normalAndDepth" degrees="132" tx="128" ty="128" ex="64" ey="64">
           <Key name="bumpMap">/resources/cache/tiles/shadertest/crappy_sphere.png</Key>
       </PutBox>
-      <PutBox name="cache/tiles/dev/3.bmp" material="bumpMap" degrees="0" tx="128" ty="0" ex="64" ey="64">
+      <PutBox name="cache/tiles/dev/3.bmp" material="normalAndDepth" degrees="0" tx="128" ty="0" ex="64" ey="64">
           <Key name="bumpMap">/resources/cache/tiles/shadertest/crappy_sphere.png</Key>
       </PutBox>
-      <PutBox name="cache/tiles/dev/3.bmp" material="bumpMap" degrees="90" tx="256" ty="0" ex="64" ey="64">
+      <PutBox name="cache/tiles/dev/3.bmp" material="normalAndDepth" degrees="90" tx="256" ty="0" ex="64" ey="64">
           <Key name="bumpMap">/resources/cache/tiles/shadertest/crappy_sphere.png</Key>
       </PutBox>
-      <PutBox name="cache/tiles/dev/3.bmp" material="bumpMap" degrees="-90" tx="384" ty="0" ex="64" ey="64">
+      <PutBox name="cache/tiles/dev/3.bmp" material="normalAndDepth" degrees="-90" tx="384" ty="0" ex="64" ey="64">
           <Key name="bumpMap">/resources/cache/tiles/shadertest/crappy_sphere.png</Key>
       </PutBox>
 
-
-      <PutBox name="cache/tiles/shadertest/alphatest.png" degrees="0" tx="0" ty="0" ex="64" ey="64">
-      </PutBox>
-
-
-      <PutBox name="cache/tiles/shadertest/lighting_test1_diffuse.png" material="bumpMap" degrees="0" tx="-128" ty="-150" ex="173" ey="84">
+      <PutBox name="cache/tiles/shadertest/lighting_test1_diffuse.png" material="normalAndDepth" degrees="0" tx="-128" ty="-150" ex="173" ey="84">
           <Key name="bumpMap">/resources/cache/tiles/shadertest/lighting_test1_normal.png</Key>
       </PutBox>
-      <PutBox name="cache/tiles/shadertest/lighting_test1_diffuse.png" material="bumpMap" degrees="0" tx="-198" ty="0" ex="173" ey="84">
+      
+      <PutBox name="cache/tiles/shadertest/lighting_test1_diffuse.png" material="normalAndDepth" degrees="0" tx="-198" ty="0" ex="173" ey="84">
           <Key name="bumpMap">/resources/cache/tiles/shadertest/lighting_test1_normal.png</Key>
       </PutBox>
-      <PutBox name="cache/tiles/shadertest/lighting_test1_diffuse.png" material="bumpMap" degrees="10" tx="-128" ty="150" ex="173" ey="84">
+      <PutBox name="cache/tiles/shadertest/lighting_test1_diffuse.png" material="normalAndDepth" degrees="10" tx="-128" ty="150" ex="173" ey="84">
           <Key name="bumpMap">/resources/cache/tiles/shadertest/lighting_test1_normal.png</Key>
       </PutBox>
 
-      <BlitArg name="radius" value="10.0" />
+      <!--<BlitArg name="radius" value="10.0" />-->
 
   </Layer>
 
