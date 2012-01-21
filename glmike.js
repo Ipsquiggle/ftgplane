@@ -166,6 +166,28 @@ function initShaders() {
     postBlur.initShaderById( "postBlur", "vpost", "fpostblur" );
 
 
+    var postSsao = new ftgMaterial();
+    postSsao.initShaderValues = function() {
+        this.bindAttribute( "aVertexPosition" );
+        this.bindAttribute( "aTextureCoord" );
+
+        this.initUniform( "uNormalMap" );
+        this.initUniform( "uRandomNormals" );
+        
+        this.initUniform( "uPMatrix" );
+        this.initUniform( "uMVMatrix" );
+        this.initUniform( "uTextureSize" );
+
+        this.initUniform( "uTotalShadowStrength" );
+        this.initUniform( "uShadowStrength" );
+        this.initUniform( "uRandomOffset" );
+        this.initUniform( "uFalloff" );
+        this.initUniform( "uRadius" );
+    }
+    postSsao.initShaderById( "postSsao", "vpost", "fpostssao" );
+
+
+
 
     // Graham test shader 1:
     // Shadow stamping
@@ -255,6 +277,24 @@ function draw() {
         ftg.mats.post.bindTextures( [scene.rt.intermediate.texture] );
         ftg.drawTextureToViewport( ftg.mats.post, gl.viewportWidth, gl.viewportHeight );
     }
+
+    {
+        var renderMat = ftg.mats["postSsao"];
+
+        renderMat.useProgram();
+
+        gl.uniform1f( renderMat.uniforms['uTotalShadowStrength'], 1.38 );
+        gl.uniform1f( renderMat.uniforms['uShadowStrength'], 0.07 );
+        gl.uniform1f( renderMat.uniforms['uRandomOffset'], 1.0 );
+        gl.uniform1f( renderMat.uniforms['uFalloff'], 0.000002 );
+        gl.uniform1f( renderMat.uniforms['uRadius'], 0.06 );
+
+        renderMat.prepareSamplers( [ 'uNormalMap', 'uRandomNormals' ] );
+        renderMat.bindTextures( [scene.rt.intermediate.texture, scene.noiseTex] );
+        ftg.drawTextureToViewport( renderMat, gl.viewportWidth, gl.viewportHeight );
+    }
+
+
 }
 
 function animate() {
@@ -294,9 +334,6 @@ function animate() {
     var plane = scene.planeSpan.planes[scene.planeSpan.drawOrder[0][0]];
     //var plane = scene.planeSpan.planes[scene.planeSpan.drawOrder[scene.planeSpan.drawOrder.length-1][0]];
     var box = plane.obbs[0];
-
-    //var rotate = mat4.create();
-    //mat4.rotate(rotate, 3.1,[0,0,1],box.mat);
 
     box.deg = parseFloat(box.deg) + 1.1;
     box.buildMatrix();
@@ -341,6 +378,8 @@ function webGLStart() {
     scene.panel = getArg('panel');
     initShaders();
     initBuffers( scene.panel );
+
+    scene.noiseTex = ftg.texMan.fetchTexture("noise.png");
 
 
 
