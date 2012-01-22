@@ -1,26 +1,6 @@
 <?xml version="1.0"?>
 
 <Panel>
-  <Layer zDistance="-1100">
-    <PutBox name="cache/tiles/dev/3.bmp" material="bumpMap" degrees="0" tx="0" ty="" ex="64" ey="64">
-          <Key name="bumpMap">/resources/cache/tiles/shadertest/crappy_sphere.png</Key>
-      </PutBox>
-    <PutBox name="cache/tiles/dev/2.bmp" material="bumpMap" degrees="90" tx="128" ty="0" ex="64" ey="64">
-          <Key name="bumpMap">/resources/cache/tiles/shadertest/crappy_sphere.png</Key>
-      </PutBox>
-    <PutBox name="cache/tiles/dev/1.bmp" material="bumpMap" degrees="-90" tx="-128" ty="0" ex="64" ey="64">
-          <Key name="bumpMap">/resources/cache/tiles/shadertest/crappy_sphere.png</Key>
-      </PutBox>
-  </Layer>
-
-  <Layer zDistance="-1000">
-    <PutBox name="cache/tiles/dev/3.bmp" degrees="0" tx="0" ty="0" ex="64" ey="64"/>
-    <PutBox name="cache/tiles/dev/2.bmp" degrees="90" tx="0" ty="128" ex="64" ey="64"/>
-    <PutBox name="cache/tiles/dev/1.bmp" material="bumpMap" degrees="-90" tx="0" ty="-128" ex="64" ey="64">
-          <Key name="bumpMap">/resources/cache/tiles/shadertest/crappy_sphere.png</Key>
-      </PutBox>
-  </Layer>
-
   <!--<Layer zDistance="-900" blitMaterial="postBlur">-->
   <Layer zDistance="-900">
       <PutBox name="cache/tiles/dev/3.bmp" material="bumpMap" degrees="132" tx="128" ty="128" ex="64" ey="64">

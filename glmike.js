@@ -118,7 +118,6 @@ function initBuffers( panel ) {
     // Blit to screen on command or after no more planes exist
     scene.rt.intermediate = new ftgRenderTarget();
     scene.rt.intermediate.init( gl.viewportWidth, gl.viewportHeight );
-
 }
 
 function initShaders() {
@@ -206,25 +205,25 @@ function initShaders() {
 
     // Graham test shader 2:
     // Normal maps
-    //var bumpMap = new ftgMaterial();
-    //bumpMap.initShaderValues = function() {
-        //this.bindAttribute( "aVertexPosition" );
-        //this.bindAttribute( "aVertexNormal" );
-        //this.bindAttribute( "aVertexTangent" );
-        //this.bindAttribute( "aTextureCoord" );
+    var bumpMap = new ftgMaterial();
+    bumpMap.initShaderValues = function() {
+        this.bindAttribute( "aVertexPosition" );
+        this.bindAttribute( "aVertexNormal" );
+        this.bindAttribute( "aVertexTangent" );
+        this.bindAttribute( "aTextureCoord" );
 
-        //this.initUniform( "uPMatrix" );
-        //this.initUniform( "uMVMatrix" );
-        //this.initUniform( "uNMatrix" );
-        //this.initUniform( "uSampler" );
-        //this.initUniform( "uNormalSampler" );
+        this.initUniform( "uPMatrix" );
+        this.initUniform( "uMVMatrix" );
+        this.initUniform( "uNMatrix" );
+        this.initUniform( "uSampler" );
+        this.initUniform( "uNormalSampler" );
 
-        //this.initUniform( "uBoxMatrix" );
+        this.initUniform( "uBoxMatrix" );
 
-        //this.initUniform( "uLightDirection" );
-        //this.initUniform( "uLightColor" );
-    //}
-    //bumpMap.initShaderById( "bumpMap", "vbump", "ftoonbump" );
+        this.initUniform( "uLightDirection" );
+        this.initUniform( "uLightColor" );
+    }
+    bumpMap.initShaderById( "bumpMap", "vbump", "ftoonbump" );
     
     var normalAndDepth = new ftgMaterial();
     normalAndDepth.initShaderValues = function() {
@@ -240,7 +239,10 @@ function initShaders() {
         this.initUniform( "uNormalSampler" );
 
         this.initUniform( "uBoxMatrix" );
+
+        this.initUniform( "uZOffset" );
     }
+    normalAndDepth.blend = false;
     normalAndDepth.initShaderById( "normalAndDepth", "vNormalAndDepth", "fNormalAndDepth" );
 }
 
@@ -260,18 +262,20 @@ function draw() {
         ftg.mats.silhouette.setProjectionUniform( scene.pMatrix );
         ftg.mats.shadowStamp.setProjectionUniform( scene.pMatrix );
         ftg.mats.normalAndDepth.setProjectionUniform( scene.pMatrix );
-        //ftg.mats.bumpMap.setProjectionUniform( scene.pMatrix );
+        ftg.mats.bumpMap.setProjectionUniform( scene.pMatrix );
 
-        //ftg.mats.bumpMap.setDirectionalLight( scene.lightPos, [1,1,1] );
+        ftg.mats.bumpMap.setDirectionalLight( scene.lightPos, [1,1,1] );
+
+    }
+
+    {
+
+        //// COLOR PASS
 
         mvPushMatrix( scene );  
         scene.planeSpan.drawArrays( scene.mvMatrix, scene.rt.intermediate, undefined );
-        //scene.planeSpan.drawArrays( scene.mvMatrix, scene.rt.intermediate, undefined, ftg.mats['normalAndDepth'] );
         mvPopMatrix( scene );
-    }
 
-    // Intermediate to screen
-    {
         ftg.mats.post.useProgram();
 
         ftg.mats.post.bindTextures( [scene.rt.intermediate.texture] );
@@ -279,13 +283,29 @@ function draw() {
     }
 
     {
+        // SHADOW PASS
+
+
+        //// Intermediate to screen
+        mvPushMatrix( scene );  
+        scene.planeSpan.drawArrays( scene.mvMatrix, scene.rt.intermediate,
+                undefined, 
+                { clearColor: [0.5,0.5,1.0, 0.0], material: ftg.mats['normalAndDepth'] }
+                );
+        mvPopMatrix( scene );
+
+        //ftg.mats.post.useProgram();
+
+        //ftg.mats.post.bindTextures( [scene.rt.intermediate.texture] );
+        //ftg.drawTextureToViewport( ftg.mats.post, gl.viewportWidth, gl.viewportHeight );
+
         var renderMat = ftg.mats["postSsao"];
 
         renderMat.useProgram();
 
         gl.uniform1f( renderMat.uniforms['uTotalShadowStrength'], 1.38 );
-        gl.uniform1f( renderMat.uniforms['uShadowStrength'], 0.07 );
-        gl.uniform1f( renderMat.uniforms['uRandomOffset'], 1.0 );
+        gl.uniform1f( renderMat.uniforms['uShadowStrength'], 0.17 );
+        gl.uniform1f( renderMat.uniforms['uRandomOffset'], 20.0 );
         gl.uniform1f( renderMat.uniforms['uFalloff'], 0.000002 );
         gl.uniform1f( renderMat.uniforms['uRadius'], 0.06 );
 
