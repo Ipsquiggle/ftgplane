@@ -52,6 +52,7 @@ scene.pMatrix  = mat4.create();
 scene.mvMatrixStack = [];
 scene.closestZ = 1;
 scene.rt = {};
+scene.shadowrt = {};
 scene.animateCamera = false;
 scene.cameraPos = [0,0,1];
 scene.lightPos = [1,1,1];
@@ -118,6 +119,8 @@ function initBuffers( panel ) {
     // Blit to screen on command or after no more planes exist
     scene.rt.intermediate = new ftgRenderTarget();
     scene.rt.intermediate.init( gl.viewportWidth, gl.viewportHeight );
+    scene.shadowrt.intermediate = new ftgRenderTarget();
+    scene.shadowrt.intermediate.init( gl.viewportWidth, gl.viewportHeight );
 }
 
 function initShaders() {
@@ -288,15 +291,15 @@ function draw() {
 
         //// Intermediate to screen
         mvPushMatrix( scene );  
-        scene.planeSpan.drawArrays( scene.mvMatrix, scene.rt.intermediate,
-                undefined, 
-                { clearColor: [0.5,0.5,1.0, 0.0], material: ftg.mats['normalAndDepth'] }
+        scene.planeSpan.drawArrays( scene.mvMatrix, scene.shadowrt.intermediate,
+                { clearColor: [0,0,0,0] }, 
+                { clearColor: [0.5,0.5,1.0,1.0], material: ftg.mats['normalAndDepth'] }
                 );
         mvPopMatrix( scene );
 
         //ftg.mats.post.useProgram();
 
-        //ftg.mats.post.bindTextures( [scene.rt.intermediate.texture] );
+        //ftg.mats.post.bindTextures( [scene.shadowrt.intermediate.texture] );
         //ftg.drawTextureToViewport( ftg.mats.post, gl.viewportWidth, gl.viewportHeight );
 
         var renderMat = ftg.mats["postSsao"];
@@ -304,13 +307,13 @@ function draw() {
         renderMat.useProgram();
 
         gl.uniform1f( renderMat.uniforms['uTotalShadowStrength'], 1.38 );
-        gl.uniform1f( renderMat.uniforms['uShadowStrength'], 0.17 );
+        gl.uniform1f( renderMat.uniforms['uShadowStrength'], 5.17 );
         gl.uniform1f( renderMat.uniforms['uRandomOffset'], 20.0 );
         gl.uniform1f( renderMat.uniforms['uFalloff'], 0.000002 );
         gl.uniform1f( renderMat.uniforms['uRadius'], 0.06 );
 
         renderMat.prepareSamplers( [ 'uNormalMap', 'uRandomNormals' ] );
-        renderMat.bindTextures( [scene.rt.intermediate.texture, scene.noiseTex] );
+        renderMat.bindTextures( [scene.shadowrt.intermediate.texture, scene.noiseTex] );
         ftg.drawTextureToViewport( renderMat, gl.viewportWidth, gl.viewportHeight );
     }
 
@@ -387,6 +390,9 @@ function webGLStart() {
     //$(window).resize( function() {setCanvasSize();});
 
     console.log( "Disable resize handling.");
+    
+    //args = { premultipliedAlpha: false };
+    //gl = WebGLUtils.setupWebGL(canvas, args );
 
     gl = WebGLUtils.setupWebGL(canvas);
     gl.viewportWidth  = canvas.width;
@@ -424,10 +430,13 @@ function webGLStart() {
     gl.enable( gl.BLEND );
     gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
     //gl.blendFunc( gl.SRC_ALPHA, gl.ONE );
+    //gl.blendFunc( gl.ONE, gl.ZERO );
 
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
+    //gl.pixelStorei( gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false );
+    
     tick();
 
 

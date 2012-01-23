@@ -154,7 +154,7 @@
 
                         float bl = 0.0;
                         // adjust for the depth ( not shure if this is good..)
-                        float radD = uRadius/currentPixelDepth;
+                        float radD = uRadius;// /currentPixelDepth;
 
                         vec3 ray, se, occNorm;
                         float occluderDepth, depthDifference, normDiff;
@@ -181,7 +181,7 @@
 
                             // calculate the difference between the normals as a weight
 
-                            normDiff = (1.0-dot(occNorm,norm));
+                            normDiff = 1.0; // (1.0-dot(occNorm,norm));
                             // the uFalloff equation, starts at uFalloff and is kind of 1/x^2 falling
                             bl += step(uFalloff,depthDifference)*normDiff*(1.0-smoothstep(uFalloff,uShadowStrength,depthDifference));
                         }
@@ -192,8 +192,9 @@
                         // this will be layered on the colour render
                         //fresPixel.a = 1.0;
                         //gl_FragColor = fresPixel;//vec4(fres*0.5+0.5,1.0);
-                        //gl_FragColor = currentPixelSample;
-                        //gl_FragColor = vec4(1,ao,0,1);
+                        //gl_FragColor = vec4(currentPixelSample.xyz, 1);
+                        //gl_FragColor = vec4(currentPixelSample.a, currentPixelSample.a, currentPixelSample.a, 1);
+                        //gl_FragColor = vec4(ao,ao,ao,1);
                         gl_FragColor = vec4(0,0,0,1.0-ao);
                      
                     }
@@ -283,8 +284,8 @@
 
                    //uniform float uNear;
                    //uniform flaot uFar;
-                   const float uNear = 950.0;
-                   const float uFar = 900.0;
+                   const float uNear = 900.0;
+                   const float uFar = 925.0;
                    
                    varying mat3 vTangentFrame;
                    varying vec4 vPosition;
@@ -301,10 +302,13 @@
 
                        map = normalize( vTangentFrame * map );
 
-                       float mapDepth = nCol.a * 5.0 + uZOffset * 5.0;
+                       float vertDepth = vPosition.z;
+                       vertDepth += uZOffset * 5.0;// - nCol.a * 5.0 ;
 
-                       float depth = (vPosition.z+mapDepth-uNear)/(uFar-uNear);
+                       float depth = (vertDepth-uNear)/(uFar-uNear);
 
+                       //gl_FragColor = vec4(1, 1, 1, depth);
+                       //gl_FragColor = vec4(depth, depth, depth, 1);
                        gl_FragColor = vec4(0.5*map+0.5, depth);
                        //gl_FragColor = vec4(0.5*map+0.5, col.a);
                        //gl_FragDepth = depth; // This output doesn't exist en GLES2.0!!
