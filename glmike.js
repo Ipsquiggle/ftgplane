@@ -53,6 +53,7 @@ scene.mvMatrixStack = [];
 scene.closestZ = 1;
 scene.rt = {};
 scene.shadowrt = {};
+scene.blurshadowrt = {};
 scene.animateCamera = false;
 scene.cameraPos = [0,0,1];
 scene.lightPos = [1,1,1];
@@ -121,6 +122,8 @@ function initBuffers( panel ) {
     scene.rt.intermediate.init( gl.viewportWidth, gl.viewportHeight );
     scene.shadowrt.intermediate = new ftgRenderTarget();
     scene.shadowrt.intermediate.init( gl.viewportWidth, gl.viewportHeight );
+    scene.blurshadowrt.intermediate = new ftgRenderTarget();
+    scene.blurshadowrt.intermediate.init( gl.viewportWidth, gl.viewportHeight );
 }
 
 function initShaders() {
@@ -314,6 +317,29 @@ function draw() {
 
         renderMat.prepareSamplers( [ 'uNormalMap', 'uRandomNormals' ] );
         renderMat.bindTextures( [scene.shadowrt.intermediate.texture, scene.noiseTex] );
+
+        // we need to blur this, so we render it back to itself once more
+        scene.blurshadowrt.intermediate.bind();
+        {
+            gl.clearColor(0,0,0,0);
+            gl.clear( gl.COLOR_BUFFER_BIT );
+            ftg.drawTextureToViewport( renderMat, gl.viewportWidth, gl.viewportHeight );
+        }
+        scene.blurshadowrt.intermediate.unbind();
+
+        // finally render it out with a blur, aaaah nice.
+        
+        //ftg.mats.post.useProgram();
+
+        //ftg.mats.post.bindTextures( [scene.blurshadowrt.intermediate.texture] );
+        //ftg.drawTextureToViewport( ftg.mats.post, gl.viewportWidth, gl.viewportHeight );
+
+        var renderMat = ftg.mats["postBlur"];
+        renderMat.useProgram();
+        renderMat.prepareSamplers( [ 'uSampler' ] );
+        gl.uniform2fv( renderMat.uniforms['uTextureSize'], [scene.blurshadowrt.intermediate.getWidth(), scene.blurshadowrt.intermediate.getHeight()] );
+        gl.uniform1f( renderMat.uniforms['radius'], 2.0 );
+        renderMat.bindTextures( [ scene.blurshadowrt.intermediate.texture ] );
         ftg.drawTextureToViewport( renderMat, gl.viewportWidth, gl.viewportHeight );
     }
 
